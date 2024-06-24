@@ -1,0 +1,23 @@
+Submodule luau contains modified content
+diff --git a/luau/Analysis/src/RequireTracer.cpp b/luau/Analysis/src/RequireTracer.cpp
+index c036a7a5..c9c41c99 100644
+--- a/luau/Analysis/src/RequireTracer.cpp
++++ b/luau/Analysis/src/RequireTracer.cpp
+@@ -25,10 +25,14 @@ struct RequireTracer : AstVisitor
+ 
+     bool visit(AstExprCall* expr) override
+     {
+-        AstExprGlobal* global = expr->func->as<AstExprGlobal>();
+-
+-        if (global && global->name == "require" && expr->args.size >= 1)
++        if (AstExprGlobal* global = expr->func->as<AstExprGlobal>(); global && global->name == "require" && expr->args.size >= 1)
++        {
+             requireCalls.push_back(expr);
++        }
++        else if (AstExprLocal* local = expr->func->as<AstExprLocal>(); local && local->local->name == "load" && expr->args.size >= 1) 
++        {
++             requireCalls.push_back(expr);
++        }
+ 
+         return true;
+     }
